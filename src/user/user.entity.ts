@@ -1,9 +1,21 @@
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  OneToOne,
+  OneToMany,
+  ManyToMany,
+  JoinColumn,
+  JoinTable,
+} from 'typeorm';
+import { Profile } from './profile.entity';
+import { Log } from '../log/log.entity';
+import { Role } from '../role/role.entity';
 
-@Entity('users')
+@Entity()
 export class User {
   @PrimaryGeneratedColumn()
-  user_id: number;
+  id: number;
 
   @Column()
   username: string;
@@ -11,8 +23,14 @@ export class User {
   @Column()
   password: string;
 
-  @Column({
-    default: false,
-  })
-  isBlogger: boolean;
+  @OneToOne(() => Profile)
+  @JoinColumn()
+  profile: Profile;
+
+  @OneToMany(() => Log, (log) => log.user)
+  logs: Log[];
+
+  @ManyToMany(() => Role, (role) => role.users)
+  @JoinTable()
+  roles: Role[];
 }
